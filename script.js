@@ -1,14 +1,12 @@
-// script.js (Versi Final yang Diperbaiki)
+// script.js (Versi Final)
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('app-container');
     const themeToggle = document.getElementById('theme-toggle');
     
-    // --- State Management ---
     let currentCategory = null;
     let currentFeature = null;
 
-    // --- UTILITY FUNCTIONS ---
     function showToast(message) {
         const toast = document.getElementById('toast');
         toast.textContent = message;
@@ -16,19 +14,15 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
     
-    // Fungsi changePage dengan callback untuk menangani animasi
     function changePage(newPageContent, onPageReadyCallback) {
         const currentPageEl = app.querySelector('.page');
-        
         const renderNewPage = () => {
             app.innerHTML = '';
             app.appendChild(newPageContent);
-            if (onPageReadyCallback && typeof onPageReadyCallback === 'function') {
-                // Memberi jeda sedikit agar elemen benar-benar siap
+            if (onPageReadyCallback) {
                 setTimeout(onPageReadyCallback, 50); 
             }
         };
-
         if (currentPageEl) {
             currentPageEl.classList.add('page-fade-out');
             currentPageEl.addEventListener('animationend', renderNewPage, { once: true });
@@ -37,9 +31,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- PAGE RENDERERS ---
-    
-    // Halaman 1: Tampilan Awal
     function renderHomePage() {
         const page = document.createElement('div');
         page.className = 'page';
@@ -54,16 +45,15 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         page.querySelector('#view-features-btn').addEventListener('click', renderCategoriesPage);
-        changePage(page, updateDeviceInfo); // Memanggil update info SETELAH halaman muncul
+        changePage(page, updateDeviceInfo);
     }
 
-    // Halaman 2: Daftar Kategori
     function renderCategoriesPage() {
         const page = document.createElement('div');
         page.className = 'page';
         page.innerHTML = `<h2>Kategori Fitur</h2>`;
-        
         featuresData.forEach(cat => {
+            if (cat.features.length === 0) return;
             const categoryContainer = document.createElement('div');
             categoryContainer.className = 'category-container';
             const categoryHeader = document.createElement('div');
@@ -71,7 +61,6 @@ document.addEventListener('DOMContentLoaded', () => {
             categoryHeader.textContent = cat.category;
             const featuresList = document.createElement('div');
             featuresList.className = 'features-list';
-
             cat.features.forEach(feat => {
                 const featureItem = document.createElement('div');
                 featureItem.className = 'feature-item';
@@ -83,7 +72,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 featuresList.appendChild(featureItem);
             });
-            
             categoryHeader.addEventListener('click', () => {
                 const currentlyOpen = document.querySelector('.features-list.open');
                 if (currentlyOpen && currentlyOpen !== featuresList) {
@@ -91,16 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
                 featuresList.classList.toggle('open');
             });
-
             categoryContainer.appendChild(categoryHeader);
             categoryContainer.appendChild(featuresList);
             page.appendChild(categoryContainer);
         });
-
         changePage(page);
     }
 
-    // Halaman 3: Pilihan Jenis Kode
     function renderFeatureTypesPage() {
         const page = document.createElement('div');
         page.className = 'page';
@@ -112,30 +97,21 @@ document.addEventListener('DOMContentLoaded', () => {
             <button class="btn type-btn" data-type="cjs">Plugins CJS</button>
             <button class="btn" id="back-to-categories">Kembali</button>
         `;
-
         page.querySelectorAll('.type-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const type = e.target.dataset.type;
-                renderCodeViewerPage(type);
-            });
+            button.addEventListener('click', (e) => renderCodeViewerPage(e.target.dataset.type));
         });
-
         page.querySelector('#back-to-categories').addEventListener('click', renderCategoriesPage);
         changePage(page);
     }
 
-    // Halaman 4: Penampil Kode (INI BAGIAN YANG DIPERBAIKI SECARA TOTAL)
     function renderCodeViewerPage(type) {
-        const feature = featuresData
-            .find(cat => cat.category === currentCategory)
-            .features.find(feat => feat.name === currentFeature);
-
-        const codeToDisplay = feature[type];
+        const featureData = featuresData.find(c => c.category === currentCategory).features.find(f => f.name === currentFeature);
+        const codeId = featureData[`${type}Id`];
+        const codeScriptElement = document.getElementById(codeId);
+        const codeToDisplay = codeScriptElement ? codeScriptElement.textContent.trim() : "Error: Kode tidak ditemukan.";
 
         const page = document.createElement('div');
         page.className = 'page';
-        
-        // 1. Buat kerangka HTML-nya dulu, dengan blok kode yang KOSONG
         page.innerHTML = `
             <h2>${currentFeature} - ${type.toUpperCase()}</h2>
             <div class="code-toolbar">
@@ -145,16 +121,12 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
             <pre class="language-javascript"><code id="code-output"></code></pre>
         `;
-        
-        // 2. Isi blok kode yang kosong tadi dengan kodemu secara aman menggunakan .textContent
         const codeElement = page.querySelector('#code-output');
         codeElement.textContent = codeToDisplay;
-
-        // 3. Tambahkan fungsi untuk tombol-tombol
+        
         page.querySelector('#copy-btn').addEventListener('click', () => {
             navigator.clipboard.writeText(codeToDisplay).then(() => showToast('Kode berhasil disalin!'));
         });
-
         page.querySelector('#download-btn').addEventListener('click', () => {
             const blob = new Blob([codeToDisplay], { type: 'text/javascript' });
             const url = URL.createObjectURL(blob);
@@ -167,53 +139,37 @@ document.addEventListener('DOMContentLoaded', () => {
             URL.revokeObjectURL(url);
             showToast('File diunduh!');
         });
-
         page.querySelector('#back-to-types').addEventListener('click', renderFeatureTypesPage);
 
-        // 4. Tampilkan halaman, dan SETELAH ITU baru warnai kodenya
-        changePage(page, () => {
-            Prism.highlightElement(codeElement);
-        });
+        changePage(page, () => Prism.highlightElement(codeElement));
     }
 
-    // --- THEME SWITCHER ---
     function setInitialTheme() {
-        if (localStorage.getItem('theme') === 'light') {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('light-mode');
-            themeToggle.checked = false;
-        } else {
-            document.body.classList.add('dark-mode');
-            document.body.classList.remove('light-mode');
-            themeToggle.checked = true;
-        }
+        const isDarkMode = localStorage.getItem('theme') !== 'light';
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        document.body.classList.toggle('light-mode', !isDarkMode);
+        themeToggle.checked = isDarkMode;
     }
 
     themeToggle.addEventListener('change', () => {
-        document.body.classList.toggle('dark-mode');
-        document.body.classList.toggle('light-mode');
-        localStorage.setItem('theme', themeToggle.checked ? 'dark' : 'light');
+        const isDarkMode = themeToggle.checked;
+        document.body.classList.toggle('dark-mode', isDarkMode);
+        document.body.classList.toggle('light-mode', !isDarkMode);
+        localStorage.setItem('theme', isDarkMode ? 'dark' : 'light');
     });
 
-    // --- FOOTER YEAR ---
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // --- DEVICE INFO ---
     function updateDeviceInfo() {
         const ipEl = document.getElementById('ip-info');
+        if (!ipEl) return;
         const netEl = document.getElementById('net-info');
         const batEl = document.getElementById('bat-info');
-
-        if (!ipEl) return; // Pengaman jika elemen tidak ditemukan
-
         fetch('https://api.ipify.org?format=json')
-            .then(res => res.json())
-            .then(data => ipEl.textContent = `IP: ${data.ip}`)
+            .then(res => res.json()).then(data => ipEl.textContent = `IP: ${data.ip}`)
             .catch(() => ipEl.textContent = 'IP: N/A');
-
-        const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        const connection = navigator.connection;
         netEl.textContent = `Net: ${connection ? connection.effectiveType : 'N/A'}`;
-
         if ('getBattery' in navigator) {
             navigator.getBattery().then(battery => {
                 const update = () => batEl.textContent = `Bat: ${Math.floor(battery.level * 100)}%`;
@@ -225,7 +181,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- INITIALIZE APP ---
     setInitialTheme();
     renderHomePage();
 });
