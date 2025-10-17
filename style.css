@@ -1,5 +1,5 @@
 /* style.css */
-@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@400;700&family=Poppins:wght@400;600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&family=Poppins:wght@400;600&display=swap');
 
 :root {
     --bg-light: #ffffff;
@@ -88,7 +88,8 @@ main {
     gap: 1.5rem;
     animation: fadeIn 0.5s forwards;
 }
-.page h2 { font-family: var(--font-header); font-size: 2rem; }
+.page h2 { font-family: var(--font-header); font-size: 2rem; text-align: center; }
+.page p { text-align: center; max-width: 500px; }
 
 /* Page Transition Animations */
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
@@ -167,28 +168,66 @@ body.light-mode .feature-item { border-top-color: #ddd; }
 
 /* --- Code Viewer Page --- */
 pre[class*="language-"] {
-    background: #011627; /* Override default prism theme bg */
+    width: 100%;
     border-radius: 8px;
+    border: 1px solid var(--border-dark);
     padding: 1rem;
-    max-height: 50vh;
+    max-height: 60vh;
     overflow: auto;
+    font-size: 0.9rem;
 }
-.code-toolbar { margin-bottom: 0.5rem; }
+.code-toolbar { margin-bottom: 1rem; display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center;}
 .code-toolbar .btn { min-width: auto; padding: 0.5rem 1rem; font-size: 0.9rem; }
 
-/* --- Footer & Floating WA --- */
-footer {
-    padding: 1rem 2rem;
-    border-top: 1px solid var(--border-dark);
+/* --- Device Info Box (NEW) --- */
+.device-info-box {
+    width: 100%;
+    max-width: 400px;
+    margin-top: 2rem;
+    padding: 1rem;
+    border: 1px solid var(--border-dark);
+    background-color: var(--card-dark);
+    border-radius: 8px;
+    text-align: center;
     font-size: 0.9rem;
+}
+body.light-mode .device-info-box {
+    border-color: #ddd;
+    background-color: var(--card-light);
+}
+.device-info-box span {
+    display: inline-block;
+    margin: 0 0.5rem;
+}
+
+
+/* --- Footer (UPDATED) --- */
+footer {
+    padding: 1.5rem 2rem;
+    border-top: 1px solid var(--border-dark);
     text-align: center;
 }
 body.light-mode footer { border-top-color: #ddd; }
-.footer-content { display: flex; justify-content: space-between; align-items: center; }
+
+.footer-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+footer p {
+    font-weight: 300; /* Font tipis */
+    font-size: 0.9rem;
+}
+
 footer a { color: var(--primary-dark); text-decoration: none; }
 body.light-mode footer a { color: var(--primary-light); }
-.social-links { display: flex; gap: 1rem; font-size: 1.5rem; }
 
+.social-links { display: flex; gap: 1.5rem; font-size: 1.5rem; }
+
+
+/* --- Floating WA --- */
 .floating-wa {
     position: fixed;
     bottom: 20px;
@@ -208,19 +247,6 @@ body.light-mode footer a { color: var(--primary-light); }
 }
 .floating-wa:hover {
     transform: scale(1.1);
-}
-
-/* --- Device Info --- */
-.device-info {
-    position: fixed;
-    bottom: 10px;
-    left: 10px;
-    background: rgba(0,0,0,0.5);
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 0.75rem;
-    z-index: 99;
 }
 
 /* --- Toast Notification --- */
