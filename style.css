@@ -208,4 +208,3 @@ body.light-mode .info-box.active {
 footer { padding: 1.5rem 2rem; border-top: 1px solid var(--border-dark); text-align: center; }
 body.light-mode footer { border-top-color: #ddd; }
 .footer-content, .social-links, .floating-wa { /* ... styles tidak berubah ... */ }
-
