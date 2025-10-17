@@ -33,7 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- PAGE RENDERERS ---
     
-    // Halaman 1: Tampilan Awal
+    // Halaman 1: Tampilan Awal (UPDATED)
     function renderHomePage() {
         currentPage = 'home';
         const page = document.createElement('div');
@@ -42,11 +42,18 @@ document.addEventListener('DOMContentLoaded', () => {
             <h2>Selamat Datang di Gudang Kode Bot WA</h2>
             <p>Temukan berbagai fitur siap pakai untuk bot WhatsApp-mu.</p>
             <button class="btn" id="view-features-btn">Lihat Fitur</button>
+            <div class="device-info-box">
+                 <span id="ip-info">IP: Loading...</span>
+                 <span id="net-info">Net: Loading...</span>
+                 <span id="bat-info">Bat: Loading...</span>
+            </div>
         `;
         page.querySelector('#view-features-btn').addEventListener('click', () => {
             renderCategoriesPage();
         });
         changePage(page);
+        // Panggil fungsi update info setelah halaman dibuat
+        updateDeviceInfo(); 
     }
 
     // Halaman 2: Daftar Kategori
@@ -120,17 +127,18 @@ document.addEventListener('DOMContentLoaded', () => {
         changePage(page);
     }
 
-    // Halaman 4: Penampil Kode
+    // Halaman 4: Penampil Kode (UPDATED - THE FIX IS HERE)
     function renderCodeViewerPage(type) {
         currentPage = 'viewer';
         const feature = featuresData
             .find(cat => cat.category === currentCategory)
             .features.find(feat => feat.name === currentFeature);
 
-        const code = feature[type];
+        const codeToDisplay = feature[type];
 
         const page = document.createElement('div');
         page.className = 'page';
+        // Buat struktur HTML dulu
         page.innerHTML = `
             <h2>${currentFeature} - ${type.toUpperCase()}</h2>
             <div class="code-toolbar">
@@ -138,11 +146,19 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="btn" id="download-btn"><i class="fas fa-download"></i> Download</button>
                 <button class="btn" id="back-to-types">Kembali</button>
             </div>
-            <pre><code class="language-javascript">${Prism.highlight(code, Prism.languages.javascript, 'javascript')}</code></pre>
+            <pre class="language-javascript"><code id="code-output"></code></pre>
         `;
         
+        // **INI PERBAIKANNYA:**
+        // Masukkan kode sebagai teks, bukan sebagai HTML. Ini mencegah browser salah mengartikannya.
+        const codeOutputElement = page.querySelector('#code-output');
+        codeOutputElement.textContent = codeToDisplay;
+        
+        // Setelah kode dimasukkan, panggil Prism untuk memberinya warna
+        Prism.highlightElement(codeOutputElement);
+
         page.querySelector('#copy-btn').addEventListener('click', () => {
-            navigator.clipboard.writeText(code).then(() => {
+            navigator.clipboard.writeText(codeToDisplay).then(() => {
                 showToast('Kode berhasil disalin!');
             }).catch(err => {
                 showToast('Gagal menyalin kode.');
@@ -150,7 +166,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         page.querySelector('#download-btn').addEventListener('click', () => {
-            const blob = new Blob([code], { type: 'text/javascript' });
+            const blob = new Blob([codeToDisplay], { type: 'text/javascript' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -195,34 +211,39 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FOOTER YEAR ---
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // --- DEVICE INFO ---
+    // --- DEVICE INFO (UPDATED) ---
     function updateDeviceInfo() {
+        const ipEl = document.getElementById('ip-info');
+        const netEl = document.getElementById('net-info');
+        const batEl = document.getElementById('bat-info');
+
         // IP (needs external API)
         fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
-            .then(data => document.getElementById('ip-info').textContent = `IP: ${data.ip}`)
-            .catch(() => document.getElementById('ip-info').textContent = 'IP: N/A');
+            .then(data => ipEl.textContent = `IP: ${data.ip}`)
+            .catch(() => ipEl.textContent = 'IP: N/A');
 
         // Connection
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
-        document.getElementById('net-info').textContent = `Net: ${connection ? connection.effectiveType : 'N/A'}`;
+        netEl.textContent = `Net: ${connection ? connection.effectiveType : 'N/A'}`;
 
         // Battery
         if ('getBattery' in navigator) {
             navigator.getBattery().then(battery => {
                 const update = () => {
-                    document.getElementById('bat-info').textContent = `Bat: ${Math.floor(battery.level * 100)}%`;
+                    batEl.textContent = `Bat: ${Math.floor(battery.level * 100)}%`;
                 };
                 update();
                 battery.addEventListener('levelchange', update);
             });
         } else {
-            document.getElementById('bat-info').textContent = 'Bat: N/A';
+            batEl.textContent = 'Bat: N/A';
         }
     }
 
     // --- INITIALIZE APP ---
     setInitialTheme();
     renderHomePage();
-    updateDeviceInfo();
+    // updateDeviceInfo() dipanggil di dalam renderHomePage()
 });
+
