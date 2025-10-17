@@ -1,48 +1,51 @@
-// script.js (Versi Update)
+// script.js (Versi Perbaikan yang Stabil)
 
 document.addEventListener('DOMContentLoaded', () => {
+    // --- Elemen Utama ---
     const app = document.getElementById('app-container');
     const themeToggle = document.getElementById('theme-toggle');
     
+    // --- Variabel Status ---
     let currentCategory = null;
     let currentFeature = null;
 
-    // === UPDATE: Logika untuk Efek Mouse dan Background ===
+    // --- FITUR BARU: Logika Efek Kursor & Latar Belakang ---
     const cursorFollower = document.getElementById('cursor-follower');
-    
-    window.addEventListener('mousemove', e => {
-        // Update posisi custom cursor
-        cursorFollower.style.left = e.clientX + 'px';
-        cursorFollower.style.top = e.clientY + 'px';
-        
-        // Update posisi cahaya background
-        document.body.style.setProperty('--mouse-x', e.clientX + 'px');
-    });
-    
-    window.addEventListener('mousedown', () => cursorFollower.classList.add('clicked'));
-    window.addEventListener('mouseup', () => cursorFollower.classList.remove('clicked'));
+    if (cursorFollower) { // Pastikan elemen ada
+        window.addEventListener('mousemove', e => {
+            cursorFollower.style.left = `${e.clientX}px`;
+            cursorFollower.style.top = `${e.clientY}px`;
+            document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
+        });
+        window.addEventListener('mousedown', () => cursorFollower.classList.add('clicked'));
+        window.addEventListener('mouseup', () => cursorFollower.classList.remove('clicked'));
+    }
 
-    // === UPDATE: Logika untuk Partikel Beranimasi ===
+    // --- FITUR BARU: Logika Partikel Beranimasi ---
     function createParticles() {
         const particlesContainer = document.getElementById('particles-bg');
-        const particleCount = 20;
+        if (!particlesContainer) return;
+        const particleCount = 25;
         for (let i = 0; i < particleCount; i++) {
             const particle = document.createElement('div');
             particle.className = 'particle';
-            const size = Math.random() * 5 + 1;
+            const size = Math.random() * 4 + 1.5;
             particle.style.width = `${size}px`;
             particle.style.height = `${size}px`;
             particle.style.left = `${Math.random() * 100}%`;
-            particle.style.animationDelay = `${Math.random() * 10}s`;
-            particle.style.animationDuration = `${Math.random() * 5 + 8}s`;
+            particle.style.animationDelay = `${Math.random() * 15}s`;
+            particle.style.animationDuration = `${Math.random() * 10 + 10}s`;
             particlesContainer.appendChild(particle);
         }
     }
 
-    function showToast(message) { /* ... fungsi tidak berubah ... */ }
-    function changePage(newPageContent, onPageReadyCallback) { /* ... fungsi tidak berubah ... */ }
+    // --- Fungsi Bantuan (Sama seperti sebelumnya) ---
+    function showToast(message) { /* ...kode tidak berubah... */ }
+    function changePage(newPageContent, onPageReadyCallback) { /* ...kode tidak berubah... */ }
 
-    // Halaman 1: Tampilan Awal (UPDATED)
+    // --- Fungsi untuk Merender Halaman ---
+
+    // Halaman 1: Tampilan Awal (Diperbarui)
     function renderHomePage() {
         const page = document.createElement('div');
         page.className = 'page';
@@ -51,42 +54,53 @@ document.addEventListener('DOMContentLoaded', () => {
             <p>Temukan berbagai fitur siap pakai untuk bot WhatsApp-mu.</p>
             <button class="btn" id="view-features-btn">Lihat Fitur</button>
             <div class="device-info-grid">
-                <div class="info-box" id="ip-box"><i class="fas fa-network-wired"></i> <span id="ip-info">IP: ...</span></div>
-                <div class="info-box" id="net-box"><i class="fas fa-signal"></i> <span id="net-info">Net: ...</span></div>
-                <div class="info-box" id="bat-box"><i class="fas fa-battery-half"></i> <span id="bat-info">Bat: ...</span></div>
-                <div class="info-box" id="loc-box"><i class="fas fa-map-marker-alt"></i> <span id="loc-info">Lokasi: ...</span></div>
+                <div class="info-box" id="ip-box"><i class="fas fa-network-wired"></i><span id="ip-info">IP: ...</span></div>
+                <div class="info-box" id="net-box"><i class="fas fa-signal"></i><span id="net-info">Net: ...</span></div>
+                <div class="info-box" id="bat-box"><i class="fas fa-battery-half"></i><span id="bat-info">Bat: ...</span></div>
+                <div class="info-box" id="loc-box"><i class="fas fa-map-marker-alt"></i><span id="loc-info">Lokasi: ...</span></div>
             </div>
         `;
         page.querySelector('#view-features-btn').addEventListener('click', renderCategoriesPage);
         changePage(page, () => {
             updateDeviceInfo();
-            // Tambahkan event listener untuk info box
+            // Tambahkan event listener untuk efek klik pada info-box
             document.querySelectorAll('.info-box').forEach(box => {
-                box.addEventListener('click', () => box.classList.toggle('active'));
+                box.addEventListener('click', () => {
+                    // Nonaktifkan semua box lain dulu
+                    document.querySelectorAll('.info-box.active').forEach(activeBox => {
+                        if (activeBox !== box) activeBox.classList.remove('active');
+                    });
+                    // Toggle box yang diklik
+                    box.classList.toggle('active');
+                });
             });
         });
     }
 
-    // Halaman 2: Daftar Kategori (UPDATED)
+    // Halaman 2: Kategori (Diperbarui dengan Tombol Kembali)
     function renderCategoriesPage() {
         const page = document.createElement('div');
         page.className = 'page';
         page.innerHTML = `<h2>Kategori Fitur</h2>`;
-        // ... (logika forEach untuk membuat kategori tidak berubah)
-        // Tambahkan tombol kembali di akhir
+        featuresData.forEach(cat => {
+            // ... (logika pembuatan daftar kategori sama seperti sebelumnya) ...
+        });
+        
+        // FITUR BARU: Tambahkan tombol kembali
         const backButton = document.createElement('button');
         backButton.className = 'btn';
         backButton.textContent = 'Kembali ke Awal';
-        backButton.style.marginTop = '1rem';
+        backButton.style.marginTop = '1rem'; // Sedikit jarak
         backButton.addEventListener('click', renderHomePage);
         page.appendChild(backButton);
+
         changePage(page);
     }
 
-    // Halaman 3: Pilihan Jenis Kode
-    function renderFeatureTypesPage() { /* ... fungsi tidak berubah ... */ }
+    // Halaman 3: Pilihan Tipe Kode (Tidak Berubah)
+    function renderFeatureTypesPage() { /* ...kode tidak berubah... */ }
 
-    // Halaman 4: Penampil Kode (UPDATED)
+    // Halaman 4: Penampil Kode (Diperbarui dengan Tampilan Baru)
     function renderCodeViewerPage(type) {
         const featureData = featuresData.find(c => c.category === currentCategory).features.find(f => f.name === currentFeature);
         const codeId = featureData[`${type}Id`];
@@ -99,16 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
         page.innerHTML = `
             <div class="code-window">
                 <div class="code-window-header">
-                    <div class="dots">
-                        <div class="dot red"></div>
-                        <div class="dot yellow"></div>
-                        <div class="dot green"></div>
-                    </div>
+                    <div class="dots"><div class="dot red"></div><div class="dot yellow"></div><div class="dot green"></div></div>
                     <div class="filename">${fileName}</div>
                 </div>
-                <div class="code-window-body">
-                    <pre class="language-javascript"><code id="code-output"></code></pre>
-                </div>
+                <div class="code-window-body"><pre class="language-javascript"><code id="code-output"></code></pre></div>
             </div>
             <div class="code-toolbar">
                 <button class="btn" id="copy-btn"><i class="fas fa-copy"></i> Copy</button>
@@ -118,42 +126,43 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         const codeElement = page.querySelector('#code-output');
         codeElement.textContent = codeToDisplay;
-        
-        page.querySelector('#copy-btn').addEventListener('click', () => { /* ... logika tidak berubah ... */ });
-        page.querySelector('#download-btn').addEventListener('click', () => { /* ... logika tidak berubah ... */ });
+        page.querySelector('#copy-btn').addEventListener('click', () => { /* ...kode tidak berubah... */ });
+        page.querySelector('#download-btn').addEventListener('click', () => { /* ...kode tidak berubah... */ });
         page.querySelector('#back-to-types').addEventListener('click', renderFeatureTypesPage);
 
         changePage(page, () => Prism.highlightElement(codeElement));
     }
 
-    // Fungsi Info Device (UPDATED)
+    // --- Fungsi Info Device (Diperbarui dengan Lokasi) ---
     function updateDeviceInfo() {
-        // ... (Fungsi untuk IP, Net, Bat tidak berubah)
-        
-        // UPDATE: Tambahkan Info Lokasi
+        // ... (Logika untuk IP, Net, Bat sama seperti sebelumnya) ...
+
+        // FITUR BARU: Logika untuk mendapatkan Lokasi
         const locEl = document.getElementById('loc-info');
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(position => {
-                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
-                    .then(res => res.json())
-                    .then(data => {
-                        locEl.textContent = `Lokasi: ${data.address.city || data.address.state}`;
-                    }).catch(() => locEl.textContent = 'Lokasi: N/A');
-            }, () => {
-                locEl.textContent = 'Lokasi: Ditolak';
-            });
-        } else {
-            locEl.textContent = 'Lokasi: N/A';
+        if (locEl && navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                position => { // Berhasil
+                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+                        .then(res => res.json())
+                        .then(data => {
+                            locEl.textContent = `Lokasi: ${data.address.city || data.address.state || 'Tidak Diketahui'}`;
+                        }).catch(() => locEl.textContent = 'Lokasi: Gagal Fetch');
+                },
+                () => { // Gagal/Ditolak
+                    locEl.textContent = 'Lokasi: Izin Ditolak';
+                }
+            );
+        } else if(locEl) {
+            locEl.textContent = 'Lokasi: Tidak Didukung';
         }
     }
-    
-    // Inisialisasi Aplikasi
+
+    // --- Inisialisasi Aplikasi ---
     function init() {
-        setInitialTheme();
-        createParticles(); // Panggil fungsi untuk membuat partikel
+        // ... (Kode setInitialTheme dan renderHomePage sama seperti sebelumnya) ...
+        createParticles(); // Panggil fungsi partikel saat aplikasi dimulai
         renderHomePage();
     }
     
-    init(); // Jalankan inisialisasi
+    init(); // Jalankan semua
 });
-
