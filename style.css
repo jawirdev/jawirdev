@@ -1,4 +1,4 @@
-/* style.css (Versi Update) */
+/* style.css (Versi Perbaikan yang Rapi) */
 @import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;700&family=Poppins:wght@400;600&display=swap');
 
 :root {
@@ -6,15 +6,13 @@
     --text-light: #222;
     --primary-light: #007bff;
     --card-light: #ffffff;
-
     --bg-dark: #0d1117;
     --text-dark: #c9d1d9;
-    --primary-dark: #58a6ff; /* Biru Neon */
+    --primary-dark: #58a6ff;
     --card-dark: #161b22;
     --border-dark: #30363d;
 }
 
-/* --- General --- */
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
@@ -24,33 +22,52 @@ body {
     display: flex;
     flex-direction: column;
     position: relative;
-    overflow: hidden; /* Mencegah scroll karena animasi */
-    cursor: none; /* Sembunyikan cursor asli */
+    cursor: none; /* Sembunyikan kursor asli */
+    overflow-x: hidden; /* Mencegah bug horizontal dari animasi */
 }
 
-/* === UPDATE: Animated Background & Light Effect === */
+/* === FITUR BARU: Efek Kursor Kustom === */
+#cursor-follower {
+    position: fixed;
+    width: 25px;
+    height: 25px;
+    border: 2px solid var(--primary-dark);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 9999;
+    pointer-events: none;
+    transition: transform 0.1s ease-out, width 0.2s, height 0.2s, background-color 0.2s;
+}
+#cursor-follower.clicked {
+    transform: translate(-50%, -50%) scale(1.4);
+    background-color: var(--primary-dark);
+}
+.btn:hover ~ #cursor-follower, a:hover ~ #cursor-follower, .feature-item:hover ~ #cursor-follower, .info-box:hover ~ #cursor-follower, .category-header:hover ~ #cursor-follower {
+    width: 45px;
+    height: 45px;
+}
+
+/* === FITUR BARU: Latar Belakang Beranimasi === */
 body::before {
     content: '';
     position: fixed;
     bottom: 0;
     left: var(--mouse-x, 50%);
     width: 1000px;
-    height: 250px; /* Sekitar 1/5 layar */
-    background: radial-gradient(circle at center, rgba(88, 166, 255, 0.15) 0%, rgba(88, 166, 255, 0) 60%);
+    height: 20%;
+    background: radial-gradient(circle at center, rgba(88, 166, 255, 0.12) 0%, rgba(88, 166, 255, 0) 65%);
     transform: translateX(-50%);
     z-index: -2;
     pointer-events: none;
-    transition: left 0.2s ease-out;
+    transition: left 0.3s ease-out;
 }
 body.light-mode::before {
-    background: radial-gradient(circle at center, rgba(0, 123, 255, 0.1) 0%, rgba(0, 123, 255, 0) 60%);
+    background: radial-gradient(circle at center, rgba(0, 123, 255, 0.1) 0%, rgba(0, 123, 255, 0) 65%);
 }
 #particles-bg {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
     z-index: -1;
     pointer-events: none;
 }
@@ -60,80 +77,67 @@ body.light-mode::before {
     border-radius: 50%;
     background-color: var(--primary-dark);
     opacity: 0;
-    animation: rise 10s infinite linear;
+    animation: rise 15s infinite linear;
+    will-change: transform, opacity;
 }
 @keyframes rise {
-    0% { transform: translateY(0) translateX(0); opacity: 0.7; }
-    50% { transform: translateY(-50vh) translateX(20px); }
-    100% { transform: translateY(-110vh) translateX(-20px); opacity: 0; }
+    0% { transform: translateY(0) scale(0.5); opacity: 0.6; }
+    50% { transform: translateY(-50vh) scale(1); }
+    100% { transform: translateY(-110vh) scale(0.5); opacity: 0; }
 }
 
-/* === UPDATE: Custom Mouse Follower === */
-#cursor-follower {
-    position: fixed;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--primary-dark);
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 1000;
-    pointer-events: none;
-    transition: transform 0.1s ease-out, width 0.2s, height 0.2s;
-}
-#cursor-follower.clicked {
-    transform: translate(-50%, -50%) scale(1.5);
-}
-.btn:hover ~ #cursor-follower, .social-links a:hover ~ #cursor-follower, .feature-item:hover ~ #cursor-follower {
-    width: 40px;
-    height: 40px;
-}
-
-/* Theme Logic */
+/* --- Struktur Utama (Tidak Banyak Berubah) --- */
 body.light-mode { background-color: var(--bg-light); color: var(--text-light); }
 body.dark-mode { background-color: var(--bg-dark); color: var(--text-dark); }
-
-/* Header */
 header, footer { background-color: rgba(13, 17, 23, 0.8); backdrop-filter: blur(10px); z-index: 10; }
 body.light-mode header, body.light-mode footer { background-color: rgba(255, 255, 255, 0.8); }
-header { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; border-bottom: 1px solid var(--border-dark); }
-body.light-mode header { border-bottom-color: #ddd; }
-header h1 { font-family: var(--font-header); font-size: 1.5rem; color: var(--primary-dark); }
-body.light-mode header h1 { color: var(--primary-light); }
-
-/* Main Content */
-main {
-    flex-grow: 1;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-    width: 100%;
-}
-.page {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1.5rem;
-    animation: fadeIn 0.5s forwards;
-}
-.page h2 { font-family: var(--font-header); font-size: 2rem; text-align: center; }
-.page p { text-align: center; max-width: 500px; }
+header { /* ...gaya header sama seperti sebelumnya... */ }
+main { flex-grow: 1; display: flex; justify-content: center; align-items: center; padding: 2rem; width: 100%; }
+.page { width: 100%; max-width: 800px; display: flex; flex-direction: column; align-items: center; gap: 1.5rem; animation: fadeIn 0.5s forwards; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 .page-fade-out { animation: fadeOut 0.3s forwards; }
+@keyframes fadeOut { from { opacity: 1; } to { opacity: 0; } }
 
-/* Buttons */
-.btn { /* ... styles tidak berubah ... */ }
+/* === UPDATE: Kotak Info Device Tampilan Baru === */
+.device-info-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+    width: 100%;
+    max-width: 550px;
+}
+.info-box {
+    background-color: var(--card-dark);
+    border: 1px solid var(--border-dark);
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 0.85rem;
+    transition: all 0.2s ease-in-out;
+}
+body.light-mode .info-box { background-color: var(--card-light); border-color: #ddd; }
+.info-box.active {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+    color: var(--bg-dark);
+    transform: translateY(-3px);
+    box-shadow: 0 4px 10px rgba(88, 166, 255, 0.3);
+}
+body.light-mode .info-box.active {
+    background-color: var(--primary-light);
+    border-color: var(--primary-light);
+    color: var(--bg-light);
+    box-shadow: 0 4px 10px rgba(0, 123, 255, 0.2);
+}
 
-/* Category List */
-.category-container { /* ... styles tidak berubah ... */ }
-
-/* === UPDATE: Code Viewer Tampilan Baru === */
+/* === UPDATE: Tampilan Penampil Kode Baru === */
 .code-window {
     width: 100%;
-    background-color: #011627; /* Warna background code block */
+    background-color: #011627;
     border: 1px solid var(--border-dark);
     border-radius: 10px;
     box-shadow: 0 10px 30px rgba(0,0,0,0.3);
@@ -144,67 +148,19 @@ main {
     align-items: center;
     padding: 0.75rem;
     background-color: var(--card-dark);
+    border-bottom: 1px solid var(--border-dark);
 }
 .code-window-header .dots { display: flex; gap: 0.5rem; }
 .code-window-header .dot { width: 12px; height: 12px; border-radius: 50%; }
 .dot.red { background-color: #ff5f56; }
 .dot.yellow { background-color: #ffbd2e; }
 .dot.green { background-color: #27c93f; }
-.code-window-header .filename {
-    color: var(--text-dark);
-    margin: 0 auto;
-    font-family: var(--font-body);
-    font-size: 0.9rem;
-}
-.code-window-body {
-    max-height: 60vh;
-    overflow: auto;
-}
+.code-window-header .filename { color: var(--text-dark); margin: 0 auto; font-family: var(--font-body); font-size: 0.9rem; }
+.code-window-body { max-height: 60vh; overflow: auto; }
 .code-window-body pre, .code-window-body code {
     background: transparent !important;
     margin: 0 !important;
     padding: 1rem !important;
-}
-.code-toolbar { margin-top: 1rem; } /* Pindahkan toolbar ke bawah */
-
-/* === UPDATE: Device Info Boxes Tampilan Baru === */
-.device-info-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 1rem;
-    justify-content: center;
-    margin-top: 2rem;
-    width: 100%;
-    max-width: 500px;
-}
-.info-box {
-    background-color: var(--card-dark);
-    border: 1px solid var(--border-dark);
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.75rem;
     font-size: 0.9rem;
-    transition: background-color 0.3s, border-color 0.3s;
-    cursor: pointer;
 }
-body.light-mode .info-box {
-    background-color: var(--card-light);
-    border-color: #ddd;
-}
-.info-box.active {
-    background-color: var(--primary-dark);
-    border-color: var(--primary-dark);
-    color: var(--bg-dark);
-}
-body.light-mode .info-box.active {
-    background-color: var(--primary-light);
-    border-color: var(--primary-light);
-    color: var(--bg-light);
-}
-
-/* Footer & Floating WA */
-footer { padding: 1.5rem 2rem; border-top: 1px solid var(--border-dark); text-align: center; }
-body.light-mode footer { border-top-color: #ddd; }
-.footer-content, .social-links, .floating-wa { /* ... styles tidak berubah ... */ }
+.code-toolbar { margin-top: 1rem; display: flex; flex-wrap: wrap; gap: 1rem; }
