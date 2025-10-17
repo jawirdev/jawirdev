@@ -1,27 +1,25 @@
-// script.js (Versi Perbaikan yang Stabil)
-
+// script.js (Versi Update yang Benar)
 document.addEventListener('DOMContentLoaded', () => {
-    // --- Elemen Utama ---
     const app = document.getElementById('app-container');
     const themeToggle = document.getElementById('theme-toggle');
     
-    // --- Variabel Status ---
     let currentCategory = null;
     let currentFeature = null;
 
-    // --- FITUR BARU: Logika Efek Kursor & Latar Belakang ---
+    // === UPDATE: Logika untuk Efek Kursor dan Latar Belakang ===
     const cursorFollower = document.getElementById('cursor-follower');
-    if (cursorFollower) { // Pastikan elemen ada
-        window.addEventListener('mousemove', e => {
+    window.addEventListener('mousemove', e => {
+        // Menggunakan requestAnimationFrame untuk performa lebih baik
+        requestAnimationFrame(() => {
             cursorFollower.style.left = `${e.clientX}px`;
             cursorFollower.style.top = `${e.clientY}px`;
             document.body.style.setProperty('--mouse-x', `${e.clientX}px`);
         });
-        window.addEventListener('mousedown', () => cursorFollower.classList.add('clicked'));
-        window.addEventListener('mouseup', () => cursorFollower.classList.remove('clicked'));
-    }
+    });
+    window.addEventListener('mousedown', () => cursorFollower.classList.add('clicked'));
+    window.addEventListener('mouseup', () => cursorFollower.classList.remove('clicked'));
 
-    // --- FITUR BARU: Logika Partikel Beranimasi ---
+    // === UPDATE: Logika untuk Partikel Beranimasi ===
     function createParticles() {
         const particlesContainer = document.getElementById('particles-bg');
         if (!particlesContainer) return;
@@ -39,13 +37,13 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Fungsi Bantuan (Sama seperti sebelumnya) ---
+    // --- Fungsi Bantuan (Kode Asli Anda) ---
     function showToast(message) { /* ...kode tidak berubah... */ }
     function changePage(newPageContent, onPageReadyCallback) { /* ...kode tidak berubah... */ }
 
-    // --- Fungsi untuk Merender Halaman ---
+    // --- Render Halaman (Kode Asli Anda yang Dimodifikasi) ---
 
-    // Halaman 1: Tampilan Awal (Diperbarui)
+    // Halaman 1: Tampilan Awal (Diperbarui dengan kotak info baru)
     function renderHomePage() {
         const page = document.createElement('div');
         page.className = 'page';
@@ -63,44 +61,34 @@ document.addEventListener('DOMContentLoaded', () => {
         page.querySelector('#view-features-btn').addEventListener('click', renderCategoriesPage);
         changePage(page, () => {
             updateDeviceInfo();
-            // Tambahkan event listener untuk efek klik pada info-box
             document.querySelectorAll('.info-box').forEach(box => {
-                box.addEventListener('click', () => {
-                    // Nonaktifkan semua box lain dulu
-                    document.querySelectorAll('.info-box.active').forEach(activeBox => {
-                        if (activeBox !== box) activeBox.classList.remove('active');
-                    });
-                    // Toggle box yang diklik
-                    box.classList.toggle('active');
-                });
+                box.addEventListener('click', () => box.classList.toggle('active'));
             });
         });
     }
 
-    // Halaman 2: Kategori (Diperbarui dengan Tombol Kembali)
+    // Halaman 2: Kategori (Diperbarui dengan tombol kembali)
     function renderCategoriesPage() {
         const page = document.createElement('div');
         page.className = 'page';
         page.innerHTML = `<h2>Kategori Fitur</h2>`;
-        featuresData.forEach(cat => {
-            // ... (logika pembuatan daftar kategori sama seperti sebelumnya) ...
-        });
+        featuresData.forEach(cat => { /* ...kode asli Anda untuk membuat daftar... */ });
         
-        // FITUR BARU: Tambahkan tombol kembali
+        // UPDATE: Tambahkan tombol kembali
         const backButton = document.createElement('button');
         backButton.className = 'btn';
         backButton.textContent = 'Kembali ke Awal';
-        backButton.style.marginTop = '1rem'; // Sedikit jarak
+        backButton.style.marginTop = '1rem';
         backButton.addEventListener('click', renderHomePage);
         page.appendChild(backButton);
 
         changePage(page);
     }
 
-    // Halaman 3: Pilihan Tipe Kode (Tidak Berubah)
+    // Halaman 3: Tipe Fitur (Kode Asli Anda, tidak berubah)
     function renderFeatureTypesPage() { /* ...kode tidak berubah... */ }
 
-    // Halaman 4: Penampil Kode (Diperbarui dengan Tampilan Baru)
+    // Halaman 4: Penampil Kode (Diperbarui dengan tampilan window)
     function renderCodeViewerPage(type) {
         const featureData = featuresData.find(c => c.category === currentCategory).features.find(f => f.name === currentFeature);
         const codeId = featureData[`${type}Id`];
@@ -129,40 +117,46 @@ document.addEventListener('DOMContentLoaded', () => {
         page.querySelector('#copy-btn').addEventListener('click', () => { /* ...kode tidak berubah... */ });
         page.querySelector('#download-btn').addEventListener('click', () => { /* ...kode tidak berubah... */ });
         page.querySelector('#back-to-types').addEventListener('click', renderFeatureTypesPage);
-
         changePage(page, () => Prism.highlightElement(codeElement));
     }
 
-    // --- Fungsi Info Device (Diperbarui dengan Lokasi) ---
-    function updateDeviceInfo() {
-        // ... (Logika untuk IP, Net, Bat sama seperti sebelumnya) ...
+    // Fungsi Tema dan Tahun (Kode Asli Anda)
+    function setInitialTheme() { /* ...kode tidak berubah... */ }
+    themeToggle.addEventListener('change', () => { /* ...kode tidak berubah... */ });
+    document.getElementById('year').textContent = new Date().getFullYear();
 
-        // FITUR BARU: Logika untuk mendapatkan Lokasi
+    // Fungsi Info Device (Diperbarui dengan lokasi)
+    function updateDeviceInfo() {
+        const ipEl = document.getElementById('ip-info');
+        const netEl = document.getElementById('net-info');
+        const batEl = document.getElementById('bat-info');
         const locEl = document.getElementById('loc-info');
-        if (locEl && navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                position => { // Berhasil
-                    fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
-                        .then(res => res.json())
-                        .then(data => {
-                            locEl.textContent = `Lokasi: ${data.address.city || data.address.state || 'Tidak Diketahui'}`;
-                        }).catch(() => locEl.textContent = 'Lokasi: Gagal Fetch');
-                },
-                () => { // Gagal/Ditolak
-                    locEl.textContent = 'Lokasi: Izin Ditolak';
-                }
-            );
-        } else if(locEl) {
-            locEl.textContent = 'Lokasi: Tidak Didukung';
+        
+        if (ipEl) { /* ...logika IP tidak berubah... */ }
+        if (netEl) { /* ...logika Net tidak berubah... */ }
+        if (batEl) { /* ...logika Bat tidak berubah... */ }
+
+        // UPDATE: Tambahkan logika untuk lokasi
+        if (locEl) {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    position => {
+                        fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${position.coords.latitude}&lon=${position.coords.longitude}`)
+                            .then(res => res.json())
+                            .then(data => {
+                                locEl.textContent = `Lokasi: ${data.address.city || data.address.state || 'Ditemukan'}`;
+                            }).catch(() => locEl.textContent = 'Lokasi: N/A');
+                    },
+                    () => { locEl.textContent = 'Lokasi: Ditolak'; }
+                );
+            } else {
+                locEl.textContent = 'Lokasi: N/A';
+            }
         }
     }
 
-    // --- Inisialisasi Aplikasi ---
-    function init() {
-        // ... (Kode setInitialTheme dan renderHomePage sama seperti sebelumnya) ...
-        createParticles(); // Panggil fungsi partikel saat aplikasi dimulai
-        renderHomePage();
-    }
-    
-    init(); // Jalankan semua
+    // Inisialisasi Aplikasi
+    setInitialTheme();
+    createParticles(); // Panggil fungsi partikel
+    renderHomePage();
 });
