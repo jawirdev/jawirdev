@@ -1,11 +1,10 @@
-// script.js
+// script.js (Versi Perbaikan)
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('app-container');
     const themeToggle = document.getElementById('theme-toggle');
     
     // --- State Management ---
-    let currentPage = 'home';
     let currentCategory = null;
     let currentFeature = null;
 
@@ -17,17 +16,28 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
 
-    function changePage(newPageContent) {
+    /**
+     * INI PERBAIKAN UTAMA:
+     * Fungsi changePage sekarang menerima 'callback', yaitu sebuah fungsi
+     * yang akan dijalankan SETELAH halaman baru selesai ditampilkan.
+     */
+    function changePage(newPageContent, callback) {
         const currentPageEl = app.querySelector('.page');
-        if (currentPageEl) {
-            currentPageEl.classList.add('page-fade-out');
-            currentPageEl.addEventListener('animationend', () => {
-                app.innerHTML = '';
-                app.appendChild(newPageContent);
-            }, { once: true });
-        } else {
+        
+        const renderNewPage = () => {
             app.innerHTML = '';
             app.appendChild(newPageContent);
+            // Jalankan callback (jika ada) setelah halaman baru benar-benar ada di DOM
+            if (callback && typeof callback === 'function') {
+                callback();
+            }
+        };
+
+        if (currentPageEl) {
+            currentPageEl.classList.add('page-fade-out');
+            currentPageEl.addEventListener('animationend', renderNewPage, { once: true });
+        } else {
+            renderNewPage();
         }
     }
 
@@ -35,7 +45,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Halaman 1: Tampilan Awal (UPDATED)
     function renderHomePage() {
-        currentPage = 'home';
         const page = document.createElement('div');
         page.className = 'page';
         page.innerHTML = `
@@ -48,17 +57,15 @@ document.addEventListener('DOMContentLoaded', () => {
                  <span id="bat-info">Bat: Loading...</span>
             </div>
         `;
-        page.querySelector('#view-features-btn').addEventListener('click', () => {
-            renderCategoriesPage();
-        });
-        changePage(page);
-        // Panggil fungsi update info setelah halaman dibuat
-        updateDeviceInfo(); 
+        page.querySelector('#view-features-btn').addEventListener('click', renderCategoriesPage);
+        
+        // Panggil changePage dan kirim 'updateDeviceInfo' sebagai callback
+        // Ini memastikan info device dimuat SETELAH halaman muncul
+        changePage(page, updateDeviceInfo);
     }
 
     // Halaman 2: Daftar Kategori
     function renderCategoriesPage() {
-        currentPage = 'categories';
         const page = document.createElement('div');
         page.className = 'page';
         page.innerHTML = `<h2>Kategori Fitur</h2>`;
@@ -66,11 +73,9 @@ document.addEventListener('DOMContentLoaded', () => {
         featuresData.forEach(cat => {
             const categoryContainer = document.createElement('div');
             categoryContainer.className = 'category-container';
-
             const categoryHeader = document.createElement('div');
             categoryHeader.className = 'category-header';
             categoryHeader.textContent = cat.category;
-            
             const featuresList = document.createElement('div');
             featuresList.className = 'features-list';
 
@@ -104,7 +109,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Halaman 3: Pilihan Jenis Kode
     function renderFeatureTypesPage() {
-        currentPage = 'types';
         const page = document.createElement('div');
         page.className = 'page';
         page.innerHTML = `
@@ -127,9 +131,8 @@ document.addEventListener('DOMContentLoaded', () => {
         changePage(page);
     }
 
-    // Halaman 4: Penampil Kode (UPDATED - THE FIX IS HERE)
+    // Halaman 4: Penampil Kode (UPDATED)
     function renderCodeViewerPage(type) {
-        currentPage = 'viewer';
         const feature = featuresData
             .find(cat => cat.category === currentCategory)
             .features.find(feat => feat.name === currentFeature);
@@ -138,7 +141,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const page = document.createElement('div');
         page.className = 'page';
-        // Buat struktur HTML dulu
         page.innerHTML = `
             <h2>${currentFeature} - ${type.toUpperCase()}</h2>
             <div class="code-toolbar">
@@ -146,23 +148,11 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="btn" id="download-btn"><i class="fas fa-download"></i> Download</button>
                 <button class="btn" id="back-to-types">Kembali</button>
             </div>
-            <pre class="language-javascript"><code id="code-output"></code></pre>
+            <pre class="language-javascript"><code id="code-output">${codeToDisplay.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
         `;
         
-        // **INI PERBAIKANNYA:**
-        // Masukkan kode sebagai teks, bukan sebagai HTML. Ini mencegah browser salah mengartikannya.
-        const codeOutputElement = page.querySelector('#code-output');
-        codeOutputElement.textContent = codeToDisplay;
-        
-        // Setelah kode dimasukkan, panggil Prism untuk memberinya warna
-        Prism.highlightElement(codeOutputElement);
-
         page.querySelector('#copy-btn').addEventListener('click', () => {
-            navigator.clipboard.writeText(codeToDisplay).then(() => {
-                showToast('Kode berhasil disalin!');
-            }).catch(err => {
-                showToast('Gagal menyalin kode.');
-            });
+            navigator.clipboard.writeText(codeToDisplay).then(() => showToast('Kode berhasil disalin!'));
         });
 
         page.querySelector('#download-btn').addEventListener('click', () => {
@@ -179,7 +169,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         page.querySelector('#back-to-types').addEventListener('click', renderFeatureTypesPage);
-        changePage(page);
+
+        // Definisikan fungsi callback untuk mewarnai kode
+        const highlightCallback = () => {
+            const codeElement = document.getElementById('code-output');
+            if (codeElement) {
+                Prism.highlightElement(codeElement);
+            }
+        };
+
+        // Panggil changePage dan kirim 'highlightCallback'
+        // Ini memastikan kode diwarnai SETELAH halaman muncul
+        changePage(page, highlightCallback);
     }
 
 
@@ -211,28 +212,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FOOTER YEAR ---
     document.getElementById('year').textContent = new Date().getFullYear();
 
-    // --- DEVICE INFO (UPDATED) ---
+    // --- DEVICE INFO ---
     function updateDeviceInfo() {
         const ipEl = document.getElementById('ip-info');
         const netEl = document.getElementById('net-info');
         const batEl = document.getElementById('bat-info');
 
-        // IP (needs external API)
+        if (!ipEl) return; // Hentikan jika elemen tidak ditemukan
+
         fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
             .then(data => ipEl.textContent = `IP: ${data.ip}`)
             .catch(() => ipEl.textContent = 'IP: N/A');
 
-        // Connection
         const connection = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
         netEl.textContent = `Net: ${connection ? connection.effectiveType : 'N/A'}`;
 
-        // Battery
         if ('getBattery' in navigator) {
             navigator.getBattery().then(battery => {
-                const update = () => {
-                    batEl.textContent = `Bat: ${Math.floor(battery.level * 100)}%`;
-                };
+                const update = () => batEl.textContent = `Bat: ${Math.floor(battery.level * 100)}%`;
                 update();
                 battery.addEventListener('levelchange', update);
             });
@@ -244,6 +242,4 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- INITIALIZE APP ---
     setInitialTheme();
     renderHomePage();
-    // updateDeviceInfo() dipanggil di dalam renderHomePage()
 });
-
