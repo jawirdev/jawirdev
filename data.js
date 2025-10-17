@@ -1,4 +1,4 @@
-// data.js (Versi Baru yang Jauh Lebih Simpel)
+// data.js (Versi Perbaikan Final)
 
 const featuresData = [
     {
@@ -6,12 +6,12 @@ const featuresData = [
         features: [
             {
                 name: "Spotify Downloader",
-                // Ini bukan lagi kode, tapi ID dari elemen <script> di index.html
+                // PERBAIKAN: Nama ID sekarang cocok dengan yang ada di index.html
                 caseId: "spotify-downloader-case",
                 esmId: "spotify-downloader-esm",
                 cjsId: "spotify-downloader-cjs"
             }
-            // Kalau mau nambah fitur baru, contoh:
+            // Jika Anda ingin menambahkan fitur baru, contohnya:
             // {
             //     name: "YouTube Downloader",
             //     caseId: "youtube-downloader-case",
@@ -23,7 +23,7 @@ const featuresData = [
     {
         category: "Tools",
         features: [
-            // Kamu bisa mulai menambahkan fitur untuk kategori ini nanti
+            // Anda dapat mulai menambahkan fitur untuk kategori ini nanti
         ]
     }
 ];
