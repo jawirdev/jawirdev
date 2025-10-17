@@ -1,4 +1,4 @@
-// script.js (Versi Perbaikan)
+// script.js (Versi Final yang Diperbaiki)
 
 document.addEventListener('DOMContentLoaded', () => {
     const app = document.getElementById('app-container');
@@ -15,21 +15,17 @@ document.addEventListener('DOMContentLoaded', () => {
         toast.className = "show";
         setTimeout(() => { toast.className = toast.className.replace("show", ""); }, 3000);
     }
-
-    /**
-     * INI PERBAIKAN UTAMA:
-     * Fungsi changePage sekarang menerima 'callback', yaitu sebuah fungsi
-     * yang akan dijalankan SETELAH halaman baru selesai ditampilkan.
-     */
-    function changePage(newPageContent, callback) {
+    
+    // Fungsi changePage dengan callback untuk menangani animasi
+    function changePage(newPageContent, onPageReadyCallback) {
         const currentPageEl = app.querySelector('.page');
         
         const renderNewPage = () => {
             app.innerHTML = '';
             app.appendChild(newPageContent);
-            // Jalankan callback (jika ada) setelah halaman baru benar-benar ada di DOM
-            if (callback && typeof callback === 'function') {
-                callback();
+            if (onPageReadyCallback && typeof onPageReadyCallback === 'function') {
+                // Memberi jeda sedikit agar elemen benar-benar siap
+                setTimeout(onPageReadyCallback, 50); 
             }
         };
 
@@ -43,7 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- PAGE RENDERERS ---
     
-    // Halaman 1: Tampilan Awal (UPDATED)
+    // Halaman 1: Tampilan Awal
     function renderHomePage() {
         const page = document.createElement('div');
         page.className = 'page';
@@ -58,10 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
         `;
         page.querySelector('#view-features-btn').addEventListener('click', renderCategoriesPage);
-        
-        // Panggil changePage dan kirim 'updateDeviceInfo' sebagai callback
-        // Ini memastikan info device dimuat SETELAH halaman muncul
-        changePage(page, updateDeviceInfo);
+        changePage(page, updateDeviceInfo); // Memanggil update info SETELAH halaman muncul
     }
 
     // Halaman 2: Daftar Kategori
@@ -131,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         changePage(page);
     }
 
-    // Halaman 4: Penampil Kode (UPDATED)
+    // Halaman 4: Penampil Kode (INI BAGIAN YANG DIPERBAIKI SECARA TOTAL)
     function renderCodeViewerPage(type) {
         const feature = featuresData
             .find(cat => cat.category === currentCategory)
@@ -141,6 +134,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const page = document.createElement('div');
         page.className = 'page';
+        
+        // 1. Buat kerangka HTML-nya dulu, dengan blok kode yang KOSONG
         page.innerHTML = `
             <h2>${currentFeature} - ${type.toUpperCase()}</h2>
             <div class="code-toolbar">
@@ -148,9 +143,14 @@ document.addEventListener('DOMContentLoaded', () => {
                 <button class="btn" id="download-btn"><i class="fas fa-download"></i> Download</button>
                 <button class="btn" id="back-to-types">Kembali</button>
             </div>
-            <pre class="language-javascript"><code id="code-output">${codeToDisplay.replace(/</g, "&lt;").replace(/>/g, "&gt;")}</code></pre>
+            <pre class="language-javascript"><code id="code-output"></code></pre>
         `;
         
+        // 2. Isi blok kode yang kosong tadi dengan kodemu secara aman menggunakan .textContent
+        const codeElement = page.querySelector('#code-output');
+        codeElement.textContent = codeToDisplay;
+
+        // 3. Tambahkan fungsi untuk tombol-tombol
         page.querySelector('#copy-btn').addEventListener('click', () => {
             navigator.clipboard.writeText(codeToDisplay).then(() => showToast('Kode berhasil disalin!'));
         });
@@ -170,19 +170,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
         page.querySelector('#back-to-types').addEventListener('click', renderFeatureTypesPage);
 
-        // Definisikan fungsi callback untuk mewarnai kode
-        const highlightCallback = () => {
-            const codeElement = document.getElementById('code-output');
-            if (codeElement) {
-                Prism.highlightElement(codeElement);
-            }
-        };
-
-        // Panggil changePage dan kirim 'highlightCallback'
-        // Ini memastikan kode diwarnai SETELAH halaman muncul
-        changePage(page, highlightCallback);
+        // 4. Tampilkan halaman, dan SETELAH ITU baru warnai kodenya
+        changePage(page, () => {
+            Prism.highlightElement(codeElement);
+        });
     }
-
 
     // --- THEME SWITCHER ---
     function setInitialTheme() {
@@ -198,15 +190,9 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     themeToggle.addEventListener('change', () => {
-        if (themeToggle.checked) {
-            document.body.classList.add('dark-mode');
-            document.body.classList.remove('light-mode');
-            localStorage.setItem('theme', 'dark');
-        } else {
-            document.body.classList.remove('dark-mode');
-            document.body.classList.add('light-mode');
-            localStorage.setItem('theme', 'light');
-        }
+        document.body.classList.toggle('dark-mode');
+        document.body.classList.toggle('light-mode');
+        localStorage.setItem('theme', themeToggle.checked ? 'dark' : 'light');
     });
 
     // --- FOOTER YEAR ---
@@ -218,7 +204,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const netEl = document.getElementById('net-info');
         const batEl = document.getElementById('bat-info');
 
-        if (!ipEl) return; // Hentikan jika elemen tidak ditemukan
+        if (!ipEl) return; // Pengaman jika elemen tidak ditemukan
 
         fetch('https://api.ipify.org?format=json')
             .then(res => res.json())
