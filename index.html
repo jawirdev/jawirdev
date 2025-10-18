@@ -1,45 +1,42 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JawirDev CodeShare</title>
-  <link rel="stylesheet" href="assets/css/style.css">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-  <link rel="stylesheet" href="https://unpkg.com/prismjs/themes/prism-tomorrow.css">
+
+  <link rel="stylesheet" href="/jawirdev/assets/libs/animate.min.css">
+  <link rel="stylesheet" href="/jawirdev/assets/css/style.css">
 </head>
-<body>
-  <header class="site-header">
+<body class="dark-mode">
+  <header>
     <h1>SHARE CODE BY JAWIR DEV</h1>
-    <div class="mode-toggle">
-      <button id="toggleTheme" aria-label="Toggle theme">🌓</button>
-    </div>
   </header>
 
-  <main class="hero">
-    <h2 class="hero-title">JawirDev CodeShare</h2>
-    <p class="hero-sub">Platform ringan untuk share fitur bot WhatsApp — mirip pastebin.</p>
-
-    <div class="actions">
-      <a class="btn primary" href="kategori.html">Lihat Fitur</a>
-      <a class="btn" href="#">Tentang</a>
-    </div>
+  <main>
+    <section class="intro">
+      <h2>JawirDev CodeShare</h2>
+      <p>Platform ringan untuk share fitur bot WhatsApp — mirip pastebin.</p>
+      <div class="btn-container">
+        <a href="kategori.html" class="btn">Lihat Fitur</a>
+        <a href="#" class="btn secondary">Tentang</a>
+      </div>
+    </section>
   </main>
 
-  <footer class="site-footer">
-    <div class="footer-links">
-      <a href="https://whatsapp.com/channel/0029Vb6Jcay8KMqestkMkj1L" target="_blank">WhatsApp Channel</a>
-      <a href="https://www.instagram.com/jawirdesiger" target="_blank">Instagram</a>
-      <a href="https://t.me/jawirdesigner" target="_blank">Telegram</a>
-    </div>
-    <div class="watermark">© 2025 JawirDev · Collab with GPT-5</div>
+  <footer>
+    <p>
+      <a href="https://whatsapp.com/channel/0029Vb6Jcay8KMqestkMkj1L">WhatsApp Channel</a> · 
+      <a href="https://www.instagram.com/jawirdesiger">Instagram</a> · 
+      <a href="https://t.me/jawirdesigner">Telegram</a>
+    </p>
+    <p>© 2025 JawirDev · Collab with GPT-5</p>
   </footer>
 
-  <!-- Floating WhatsApp button fixed bottom-right -->
-  <a id="floatingWA" class="floating-wa" href="https://wa.me/6282131032770" target="_blank" title="Chat JawirDev">
-    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true"><path fill="white" d="M12 2C6.49 2 2 6.49 2 12c0 1.66.41 3.22 1.12 4.58L2 22l5.54-1.03C9.29 21.1 10.61 21.5 12 21.5 17.51 21.5 22 17.01 22 11.5S17.51 2 12 2z"></path></svg>
-  </a>
+  <div id="floating-wa" onclick="window.open('https://wa.me/6282131032770','_blank')">
+    💬
+  </div>
 
-  <script src="assets/js/main.js"></script>
+  <script src="/jawirdev/assets/js/main.js"></script>
 </body>
 </html>
