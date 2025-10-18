@@ -1,42 +1,36 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Code Viewer | JawirDev</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kumpulan Code – JawirDev</title>
   <link rel="stylesheet" href="/jawirdev/assets/libs/animate.min.css">
-  <link rel="stylesheet" href="/jawirdev/assets/libs/prism.min.css">
   <link rel="stylesheet" href="/jawirdev/assets/css/style.css">
+  <script src="/jawirdev/assets/libs/prism.min.js" defer></script>
+  <script src="/jawirdev/assets/js/data.js" defer></script>
+  <script src="/jawirdev/assets/js/main.js" defer></script>
 </head>
-<body class="dark-mode">
-  <header>
-    <h1>SHARE CODE BY JAWIR DEV</h1>
+<body>
+  <header class="site-header">
+    <div class="container">
+      <h1 class="logo">JawirDev</h1>
+      <nav class="nav">
+        <a href="/jawirdev/index.html">Beranda</a>
+        <a href="/jawirdev/kategori.html">Kategori</a>
+        <a href="/jawirdev/jenis.html">Jenis</a>
+        <a href="/jawirdev/code.html" class="active">Code</a>
+        <a href="/jawirdev/admin.html">Admin</a>
+      </nav>
+    </div>
   </header>
 
-  <main>
-    <pre><code id="codeBlock" class="language-javascript"></code></pre>
-
-    <div class="code-actions">
-      <button onclick="copyCode()">Copy</button>
-      <button onclick="rawCode()">Raw</button>
-      <button onclick="downloadCode()">Download</button>
-      <button onclick="shareCode()">Share</button>
-    </div>
+  <main class="container">
+    <h2>Daftar Code</h2>
+    <div id="code-list" class="code-list"></div>
   </main>
 
-  <footer>
-    <p>
-      <a href="https://whatsapp.com/channel/0029Vb6Jcay8KMqestkMkj1L">WhatsApp Channel</a> · 
-      <a href="https://www.instagram.com/jawirdesiger">Instagram</a> · 
-      <a href="https://t.me/jawirdesigner">Telegram</a>
-    </p>
-    <p>© 2025 JawirDev · Collab with GPT-5</p>
+  <footer class="site-footer">
+    <p>© 2025 JawirDev</p>
   </footer>
-
-  <div id="floating-wa" onclick="window.open('https://wa.me/6282131032770','_blank')">💬</div>
-
-  <script src="/jawirdev/assets/libs/prism.min.js"></script>
-  <script src="/jawirdev/assets/js/data.js"></script>
-  <script src="/jawirdev/assets/js/main.js"></script>
 </body>
-        </html>
+</html>
