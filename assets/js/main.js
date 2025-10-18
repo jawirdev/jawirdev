@@ -1,38 +1,22 @@
-// main.js - theme, device info, small utilities
-(function(){
-  // Theme toggle
-  const root = document.documentElement;
-  const saved = localStorage.getItem('jawir_theme');
-  if(saved) document.documentElement.setAttribute('data-theme', saved);
-  const toggle = document.getElementById('toggleTheme');
-  if(toggle) toggle.addEventListener('click', ()=>{
-    const cur = document.documentElement.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
-    document.documentElement.setAttribute('data-theme', cur);
-    localStorage.setItem('jawir_theme', cur);
-  });
+function copyCode() {
+  const code = document.getElementById('codeBlock').innerText;
+  navigator.clipboard.writeText(code);
+  alert('Kode berhasil disalin!');
+}
 
-  // Floating WA position fix already via CSS (fixed)
+function rawCode() {
+  const file = new URLSearchParams(window.location.search).get('file');
+  window.open(`/jawirdev/codes/downloader/${file}.js`, '_blank');
+}
 
-  // Inject DATA if not present
-  if(!window.DATAFEATURES) window.DATAFEATURES = [];
+function downloadCode() {
+  const file = new URLSearchParams(window.location.search).get('file');
+  const link = document.createElement('a');
+  link.href = `/jawirdev/codes/downloader/${file}.js`;
+  link.download = `${file}.js`;
+  link.click();
+}
 
-  // Device info: IP
-  async function loadIP(){
-    try{
-      const r = await fetch('https://api.ipify.org?format=json');
-      const j = await r.json();
-      window.USER_IP = j.ip;
-    }catch(e){window.USER_IP = 'unknown'}
-  }
-  loadIP();
-
-  // Battery
-  if(navigator.getBattery) navigator.getBattery().then(b=>{window.USER_BATTERY = Math.round(b.level*100)});
-  // Connection
-  window.USER_CONNECTION = (navigator.connection && navigator.connection.effectiveType) ? navigator.connection.effectiveType : 'unknown';
-
-  // Small util to show notifications (simple)
-  window.jNotify = function(msg){
-    alert(msg);
-  }
-})();
+function shareCode() {
+  alert('Fitur share coming soon!');
+}
