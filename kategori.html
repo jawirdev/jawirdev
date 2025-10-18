@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Kategori — JawirDev</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+</head>
+<body>
+  <header class="site-header">
+    <h1>SHARE CODE BY JAWIR DEV</h1>
+    <a class="back-link" href="index.html">← Beranda</a>
+  </header>
+
+  <main class="container">
+    <h2>Pilih Kategori</h2>
+    <div id="categories" class="categories"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="watermark">© 2025 JawirDev · Collab with GPT-5</div>
+  </footer>
+
+  <a id="floatingWA" class="floating-wa" href="https://wa.me/6282131032770" target="_blank">WA</a>
+  <script src="assets/js/main.js"></script>
+  <script>
+    // Render kategori berdasarkan data.js
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const cats = window.DATAFEATURES || [];
+      const container = document.getElementById('categories');
+      const unique = [...new Set(cats.map(x=>x.kategori))];
+      unique.forEach(k=>{
+        const btn = document.createElement('button');
+        btn.className = 'category-btn';
+        btn.textContent = k;
+        btn.onclick = ()=>{
+          // Simpan kategori dipilih dan pindah
+          localStorage.setItem('jawir_kategori', k);
+          location.href = 'jenis.html';
+        }
+        container.appendChild(btn);
+      });
+    });
+  </script>
+</body>
+</html>

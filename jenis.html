@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Pilih Tipe — JawirDev</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1 id="featureTitle">Fitur</h1>
+    <a class="back-link" href="kategori.html">← Kembali</a>
+  </header>
+
+  <main class="container">
+    <div id="featuresList" class="features-list"></div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="watermark">© 2025 JawirDev · Collab with GPT-5</div>
+  </footer>
+
+  <a id="floatingWA" class="floating-wa" href="https://wa.me/6282131032770" target="_blank">WA</a>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', ()=>{
+      const kategori = localStorage.getItem('jawir_kategori') || '';
+      document.getElementById('featureTitle').textContent = kategori || 'Fitur';
+      const features = (window.DATAFEATURES||[]).filter(f=>f.kategori===kategori);
+      const container = document.getElementById('featuresList');
+      features.forEach(f=>{
+        const card = document.createElement('div');
+        card.className = 'feature-card animate__animated animate__fadeInUp';
+        card.innerHTML = `<h3>${f.nama}</h3><p>${f.deskripsi||''}</p><div class="feature-actions"><button class="btn" onclick="openJenis('${encodeURIComponent(JSON.stringify(f))}')">Pilih</button></div>`;
+        container.appendChild(card);
+      });
+    });
+
+    function openJenis(encoded){
+      localStorage.setItem('jawir_feature', encoded);
+      location.href = 'code.html';
+    }
+  </script>
+</body>
+</html>

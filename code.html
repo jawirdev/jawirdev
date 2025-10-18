@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Code Viewer — JawirDev</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+  <link rel="stylesheet" href="https://unpkg.com/prismjs/themes/prism-tomorrow.css">
+</head>
+<body>
+  <header class="site-header">
+    <h1 id="fTitle">Fitur</h1>
+    <a class="back-link" href="jenis.html">← Kembali</a>
+  </header>
+
+  <main class="container code-viewer">
+    <div class="code-meta">
+      <div id="metaInfo"></div>
+      <div class="code-controls">
+        <button id="btnCopy" class="btn">Copy</button>
+        <button id="btnRaw" class="btn">Raw</button>
+        <button id="btnDownload" class="btn">Download</button>
+        <button id="btnShare" class="btn">Share</button>
+      </div>
+    </div>
+
+    <pre id="codeBlock" class="line-numbers"><code id="codeContent" class="language-javascript">// Loading...</code></pre>
+
+    <div class="meta-stats">
+      <span id="views">👁️ 0 views</span>
+      <span id="rating">⭐ 0</span>
+    </div>
+
+    <section id="comments">
+      <h3>Komentar</h3>
+      <p>Fitur komentar menggunakan GitHub Discussions atau giscus bisa diaktifkan nanti.</p>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="watermark">© 2025 JawirDev · Collab with GPT-5</div>
+  </footer>
+
+  <a id="floatingWA" class="floating-wa" href="https://wa.me/6282131032770" target="_blank">WA</a>
+
+  <script src="https://unpkg.com/prismjs/prism.js"></script>
+  <script src="https://unpkg.com/prismjs/components/prism-javascript.min.js"></script>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async ()=>{
+      const raw = localStorage.getItem('jawir_feature');
+      if(!raw) return location.href = 'kategori.html';
+      const f = JSON.parse(decodeURIComponent(raw));
+      document.getElementById('fTitle').textContent = f.nama;
+      document.getElementById('metaInfo').innerHTML = `<strong>${f.nama}</strong> — ${f.kategori}`;
+
+      // By default show Case
+      const defaultFile = f.file_case;
+      const response = await fetch(defaultFile).catch(()=>null);
+      if(!response) {
+        document.getElementById('codeContent').textContent = '// File tidak ditemukan';
+        Prism.highlightElement(document.getElementById('codeContent'));
+        return;
+      }
+      const code = await response.text();
+      document.getElementById('codeContent').textContent = code;
+      Prism.highlightElement(document.getElementById('codeContent'));
+
+      // Views counter (local)
+      const key = 'views_'+f.nama.replace(/\s+/g,'_');
+      let v = parseInt(localStorage.getItem(key)||'0')+1;
+      localStorage.setItem(key, v);
+      document.getElementById('views').textContent = '👁️ '+v+' views';
+
+      // Buttons
+      document.getElementById('btnCopy').onclick = ()=>{
+        navigator.clipboard.writeText(code).then(()=> alert('Copied!'));
+      }
+      document.getElementById('btnRaw').onclick = ()=>{
+        const w = window.open('about:blank','_blank');
+        w.document.write('<pre>'+escapeHtml(code)+'</pre>');
+      }
+      document.getElementById('btnDownload').onclick = ()=>{
+        const blob = new Blob([code], {type:'text/plain'});
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = f.nama.replace(/\s+/g,'_')+'.js';
+        a.click();
+      }
+      document.getElementById('btnShare').onclick = ()=>{
+        const url = location.href;
+        if(navigator.share) navigator.share({title: f.nama, text: 'Lihat fitur '+f.nama, url});
+        else prompt('Copy link:', url);
+      }
+    });
+
+    function escapeHtml(s){
+      return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+  </script>
+</body>
+</html>

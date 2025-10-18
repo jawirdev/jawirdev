@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin — JawirDev</title>
+  <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+  <header class="site-header"><h1>Admin Panel</h1><a class="back-link" href="index.html">← Beranda</a></header>
+  <main class="container">
+    <h2>Tambah fitur (local)</h2>
+    <form id="frm">
+      <label>Nama fitur<input id="nama" required></label>
+      <label>Kategori<input id="kategori" required></label>
+      <label>Deskripsi<textarea id="deskripsi"></textarea></label>
+      <label>Code (Case)<textarea id="code_case" required></textarea></label>
+      <label>Code (CJS)<textarea id="code_cjs"></textarea></label>
+      <label>Code (ESM)<textarea id="code_esm"></textarea></label>
+      <button type="submit" class="btn primary">Tambah &amp; Generate Files</button>
+    </form>
+
+    <hr>
+    <p>Catatan: GitHub Pages tidak mengizinkan tulis file langsung. Tombol ini akan menghasilkan file ZIP/JSON yang bisa kamu download dan upload manual ke repo.</p>
+  </main>
+  <footer class="site-footer"><div class="watermark">© 2025 JawirDev · Collab with GPT-5</div></footer>
+  <a id="floatingWA" class="floating-wa" href="https://wa.me/6282131032770" target="_blank">WA</a>
+  <script src="assets/js/main.js"></script>
+  <script>
+    document.getElementById('frm').addEventListener('submit', e=>{
+      e.preventDefault();
+      const nama = document.getElementById('nama').value.trim();
+      const kategori = document.getElementById('kategori').value.trim();
+      const deskripsi = document.getElementById('deskripsi').value.trim();
+      const caseCode = document.getElementById('code_case').value;
+      const cjsCode = document.getElementById('code_cjs').value;
+      const esmCode = document.getElementById('code_esm').value;
+
+      // Build object
+      const obj = {
+        nama, kategori, deskripsi,
+        file_case: `codes/${kategori.toLowerCase()}/${nama.replace(/\s+/g,'_')}_case.js`,
+        file_cjs: `codes/${kategori.toLowerCase()}/${nama.replace(/\s+/g,'_')}_cjs.js`,
+        file_esm: `codes/${kategori.toLowerCase()}/${nama.replace(/\s+/g,'_')}_esm.js`
+      };
+
+      // Update DATAFEATURES in memory and create downloadable files
+      const data = window.DATAFEATURES || [];
+      data.push(obj);
+
+      // Create downloadable files
+      const zipContent = JSON.stringify({feature:obj, data}, null, 2);
+      const blob = new Blob([zipContent], {type:'application/json'});
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${nama.replace(/\s+/g,'_')}_payload.json`;
+      a.click();
+
+      alert('File JSON generated. Download selesai. Upload file dan code ke repo untuk menambahkan fitur permanen.');
+    });
+  </script>
+</body>
+</html>
